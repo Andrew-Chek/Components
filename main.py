@@ -1,39 +1,40 @@
-from math import *
-from try_parse.utils import ParseUtils
-
-x = input('Enter num x: ')
-y = input('Enter num y: ')
+import requests
+from bs4 import BeautifulSoup
+value = input("Enter a path to web: ")
 try:
-    x = int(x)
-    y = int(y)
-except:
-    print("Error: number x or y isn't correct")
-else:
-    z = pow(cos(x), 2) + pow(sin(y), 2)
-    print("z is: ", z)
-
-N = input('Enter num N: ')
-try:
-    N = int(N)
-except:
-    print("Error: number N isn't correct")
-else:
-    s = 0
-    if N > 0:
-        for i in range(N + 1):
-            s = s + pow(i, 2)
-        print("sum of elements in square is: ", s)
+    r = requests.get("https://{0}".format(value))
+    if r.ok:
+        page = BeautifulSoup(r.text, 'html.parser')
+        images = page.findAll('img')
+        links = page.findAll('a')
+        word = input("Enter a word for checking: ")
+        numberOfWords = 0
+        text = page.body.text
+        text = text.replace('|', '')
+        text = text.replace('.', '')
+        text = text.replace('-', '')
+        text = text.replace('`', '')
+        text = text.replace('"', '')
+        text = text.replace('?', '')
+        text = text.replace('!', '')
+        text = text.replace(')', '')
+        text = text.replace('(', '')
+        text = text.replace(',', '')
+        newText = text.replace(':', '')
+        array = newText.split()
+        for i in range(len(array)):
+            if array[i] == word:
+                numberOfWords += 1
+        frequency1 = numberOfWords / len(array)
+        print("Frequency of word {0} in text of news is {1}".format(word, frequency1))
+        tag = input("Enter a tag for checking: ")
+        numberOfTags = page.findAll('{0}'.format(tag))
+        numberOfAllTags = page.findAll()
+        frequency2 = len(numberOfTags) / len(numberOfAllTags)
+        print("Frequency of tag {0} is {1}".format(tag, frequency2))
+        print("Total number of images is {0}".format(len(images)))
+        print("Total number of links is {0}".format(len(links)))
     else:
-        print("Error: number N can't be negative")
-
-a = [-17, -1, 12, 4, 3, -12, 10, 6]
-print(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7])
-print("max of array is: ", max(a))
-product = 1
-for i in range(len(a)):
-    product = product * a[i]
-print(product)
-ending = " "
-for i in range(len(a)):
-    if a[i] > 0:
-        print(a[i], end=ending)
+        print("url isn't correct")
+except:
+    print("url isn't correct")
